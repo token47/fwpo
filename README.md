@@ -1,7 +1,6 @@
-fwpo
-====
+# fwpo
 
-Firewall Port Opener
+## Firewall Port Opener
 
 A remote web interface for opening netfilter rules for a limited time on linux.
 
@@ -30,51 +29,57 @@ moment, then it will close automaticaly. If you set up your firewall
 correctly, the opened session will be kept going (because of the
 stateful firewall nature of netfilter).
 
-INSTALL
-=======
+## INSTALL
 
-1) Put the script somewhere in the htdocs tree
-2) Adjust it to run only with SSL/HTTPS (optional)
-3) Configure password using .htaccess in that dir
-4) Edit the script and adjust the rules (sorry, no config files yet!)
-5) Add permission for apache user to run iptables command without
+1. Put the script somewhere in the htdocs tree
+1. Adjust it to run only with SSL/HTTPS (optional)
+1. Configure password using .htaccess in that dir
+1. Edit the script and adjust the rules (sorry, no config files yet!)
+1. Add permission for apache user to run iptables command without
    password in /etc/sudoers (see security concerns for tips and examples)
-6) Adjust your old firewall rules to jump to the new chain you just
+1. Adjust your old firewall rules to jump to the new chain you just
    invented to insert the temporary rules (and as well create the empty
    chain when loading up) (optional - you may insert them right in the
    main chain)
-7) Test it! And send me comments :-)
+1. Test it! And send me comments :-)
 
-SUDO AND FIREWALL EXAMPLE CONFIGURATIONS
-========================================
+## SUDO AND FIREWALL EXAMPLE CONFIGURATIONS
 
 For the more paranoid, you can add as many explicit rules as you need
 (unfortunately sudo does not use regular expressions, they are simple
 shell expressions, but this should be enough):
 
+```
 apache  ALL=(ALL) NOPASSWD: \
         /sbin/iptables -[AD] INPUT_TMP -j ACCEPT -p tcp --dport ssh -s *,\
         /sbin/iptables -[AD] INPUT_TMP -j ACCEPT -p tcp --dport imap -s *
+```
 
 Or, alternatively, less secure (but you do not need to edit sudoers when
 you change a rule in the script:
 
+```
 apache  ALL=(ALL) NOPASSWD: /sbin/iptables -[AD] INPUTTMP *
+```
 
 Or, even easier (in case you do not have a special chain):
 
+```
 apache  ALL=(ALL) NOPASSWD: /sbin/iptables -[AD] *
+```
 
 In my firewall script, somewhere in the middle of it, I have:
 
+```
 $IPTABLES -N INPUTTMP
 $IPTABLES -A INPUT -j INPUTTMP
+```
 
 Just that. No rules, but an empty chain, that will be used later. This is
 usable in the case you have DROPs later and want your temporary rules to
 be inserted (read evaluated) in that specific "position" among others.
 
-SECURITY CONCERNS:
+## SECURITY CONCERNS
 
 - If you are a security paranoid, *do not use this script*
 - If possible, use SSL to log on and access this script.
@@ -98,13 +103,9 @@ SECURITY CONCERNS:
   and will keep you organized if you already have a lot of rules
   running.
 
-MISC:
+## FEEDBACK
 
 This is a hack I made for a specific need, and don't use it anymore. But
 please send any comments or pull requests you may have so I can improve it
 in case anyone needs it.
-
-Changelog
-
-+ Initial version, 05-Sep-2005, version 1.0
 
